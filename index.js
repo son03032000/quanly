@@ -21,7 +21,7 @@ const removeAccents = (str) => {
 
 let storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './public/uploads')
+         cb(null, './public/uploads')
     },
     filename: function (req, file, cb) {
         cb(null, `${removeAccents(file.originalname.substr(0,file.originalname.lastIndexOf('.'))).replace(/\s/g,'')}-${Date.now()}.${file.originalname.substr(file.originalname.lastIndexOf('.')+1,file.originalname.length)}`);
