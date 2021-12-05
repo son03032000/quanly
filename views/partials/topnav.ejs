@@ -1,0 +1,17 @@
+<div class="topnav">
+    <a href="/">Home</a>
+    <% if (!session.userID) { %>
+        <a href="/Login">Login</a>
+    <% } else { %>
+        <% if (session.roleName === "Admin") { %>
+            <a href="/Admin">Admin</a>
+        <% } else if (session.roleName === "Marketing Coordinator") { %>
+            <a href="/Coordinator">Coordinator</a>
+        <% } else if (session.roleName === "Student") { %>
+            <a href="/Contact">Contact</a>
+        <% } else if (session.roleName === "Marketing Manager") { %>
+            <a href="/Manager">Manager</a>
+        <% } %>    
+        <a href="/Logout">Logout</a>
+    <% } %>
+</div>

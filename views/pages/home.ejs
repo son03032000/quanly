@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+</head>
+    
+<body>
+    <%- include('../partials/topnav') %>
+    <div>
+        <ul>
+            <% for (let faculty of data.faculty) { %>
+                <li>
+                    <a href="/Faculty/<%- faculty.FacultyID %>"><%- faculty.FacultyName %> (Leader: <%- faculty.Name %>)</a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+</body>
+
+</html>

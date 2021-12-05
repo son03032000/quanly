@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+    <style>
+        table, th, td {
+            padding: 5px;
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+    </style>
+</head>
+    
+<body>
+    <%- include('../partials/topnav') %>
+    <br>
+    <div>
+        <table style="width: 100%;">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+            </tr>
+            <tr>
+                <td><%- data.Account.AccID %></td>
+                <td><%- data.Account.Username %></td>
+                <td><%- data.Account.Name %></td>
+                <td><%- data.Account.Email %></td>
+                <td>
+                    <a href="/Message/<%- data.Account.AccID %>">Send Message</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

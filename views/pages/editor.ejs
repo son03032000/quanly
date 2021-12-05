@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+</head>
+    
+<body>
+    <%- include('../partials/topnav') %>
+    <br>
+    <div>
+        <form action="/DoEdit" enctype="multipart/form-data" method="POST">
+            <input type="hidden" name="article" value="<%- data.ArticleID %>">
+            <input type="hidden" name="type" value="Edit">
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="title" placeholder="Title" style="width: 100%" value="<%- data.Title %>" required>
+            <label for="message">Message:</label>
+            <textarea style="width: 100%; resize: none;" rows="4" name="message" id="message" placeholder="Message"><%- data.Message %></textarea>
+            <label for="files">Select files:</label>
+            <input type="file" id="files" name="files" multiple><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div>
+        <p>Attachments:</p>
+        <ul id="attachments">
+            
+        </ul>
+    </div>
+</body>
+
+<script>
+    function GetAttachments() {
+        let ul = document.getElementById("attachments");
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                ul.innerHTML = "";
+                let attachments = JSON.parse(this.responseText);
+                for (let file of attachments) {
+                    let html = `<li>
+                        <a href="/Download/${file.AttID}" target="_blank">${file.FileName}</a>
+                        <button style="display: inline-block;" onclick="DeleteAttachment(this, '${file.AttID}')">Delete</button>
+                        </li>`;
+                    ul.insertAdjacentHTML('beforeend', html);
+                }
+            }
+        }
+        xhttp.open("GET", `/GET/Get_Attachments?page=${"<%- data.ArticleID %>"}`, true);
+	    xhttp.send();
+    }
+    function DeleteAttachment(btn, attID) {
+        btn.disabled = true;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                btn.disabled = false;
+                GetAttachments();
+            }
+        }
+        xhttp.open("POST", "/POST/Delete", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify({type: "Attachment", attID: attID}));
+    }
+    window.onload = function() {
+        GetAttachments();
+    }
+</script>
+
+</html>

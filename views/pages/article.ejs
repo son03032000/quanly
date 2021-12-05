@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+    <style>
+        table, th, td {
+            padding: 5px;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        .btn {
+            margin-top: 5px;
+            display: inline-block;
+        }
+        #cmtInput {
+            resize: none;
+            width: 100%;
+        }
+    </style>
+</head>
+    
+<body>
+    <% const timeFormat = (time) => { 
+        let dt = new Date(+time);
+        return `${dt.getDate()}/${(dt.getMonth()+1)}/${dt.getFullYear()}`;
+    } %>
+    <%- include('../partials/topnav') %>
+    <div>
+        <span>Article</span>
+        <table style="width: 100%;">
+            <colgroup>
+                <col span="1" style="width: 20%;">
+                <col span="1" style="width: 80%;">
+             </colgroup>
+            <tr>
+                <th>Author</th>
+                <th>Content</th>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align:top;" rowspan="2">
+                    <a href="/Message/<%- data.AccID %>"><%- data.Username %></a>
+                </td>
+                <td>
+                    <%- data.Message %>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Attachments:
+                    <ul>
+                        <% for (let file of data.Attachments) { %>
+                            <li>
+                                <a href="<%- file.Url %>" target="_blank"><%- file.FileName %></a>
+                                <% if (file.FileName.split('.').pop().toLowerCase() === "pdf" && session.roleName === "Marketing Coordinator" && session.faculty && session.faculty.FacultyID == data.FacultyID) { %>
+                                    <a style="display:inline-block;" href="/View/<%- file.AttID %>">View</a>
+                                <% } %>
+                            </li>
+                        <% } %>    
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <% if (data.AuthorID === session.userID) { %>
+            <a href="/Editor?id=<%- data.ArticleID %>">Edit</a>
+            <button class="btn" onclick="Delete(this, 'Article')">Delete</button>
+        <% } %>
+        <br>
+        <% if (data.MCComment) { %>
+        <span>Marketing Coordinator's Comment</span>
+        <table style="width: 100%;">
+            <colgroup>
+                <col span="1" style="width: 20%;">
+                <col span="1" style="width: 80%;">
+             </colgroup>
+            <tr>
+                <th>Marketing Coordinator</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align:top;">
+                    <a href="/Message/<%- data.MCComment.AccID %>"><%- data.MCComment.Username %></a>
+                </td>
+                <td>
+                    <%- data.MCComment.Content %>
+                </td>
+            </tr>
+        </table>
+        <% }
+        if (session.roleName === "Marketing Coordinator" && session.faculty && session.faculty.FacultyID == data.FacultyID) {
+            if (data.MCComment) { %>
+                <a href="/Coordinator/EditComment?id=<%- data.MCComment.CommentID %>">Edit Comment</a>
+            <% } else { %>
+                <a href="/Coordinator/Comment?article=<%- data.ArticleID %>">Comment this Article</a>
+        <% } } %>
+    </div>
+    <br>
+    <% if (session.userID) { %>
+    <div>
+        <textarea id="cmtInput" rows="4"></textarea>
+        <button style="width: 100%;" onclick="SendCmt(this)">Send</button>
+    </div>
+    <% } %>
+    <div id="comments">
+
+    </div>
+</body>
+</html>
+<script>
+    window.onload = function() {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let comments = JSON.parse(this.responseText);
+                if (comments.length <= 0) return;
+                let domHtml = `<span>User's Comments</span>`;
+                for (let cmt of comments) {
+                    domHtml += `
+                    <table style="width: 100%;">
+                        <colgroup>
+                            <col span="1" style="width: 20%;">
+                            <col span="1" style="width: 80%;">
+                        </colgroup>
+                        <tr>
+                            <td style="text-align: center; vertical-align:top;"><a href="/Message/${cmt.AccID}">${cmt.Username}</a></td>
+                            <td>${cmt.Content}</td>
+                        </tr>
+                    </table>
+                    ${"<%- session.userID %>" == cmt.AccID || "<%- session.roleName %>" === "Admin" ? 
+                        `<button class="btn" onclick="Delete(this, 'Comment', ${cmt.CmtID})">Delete</button>` : ""}<br>`;
+                }
+                document.getElementById("comments").insertAdjacentHTML('beforeend', domHtml);
+            }
+        }
+        xhttp.open("GET", `/GET/Get_Comments?page=${"<%- data.ArticleID %>"}`, true);
+	    xhttp.send();
+    }
+    function SendCmt(btn) {
+        let data = { page: "<%- data.ArticleID %>", author: "<%- session.userID %>" };
+        data.message = document.getElementById("cmtInput").value;
+        btn.disabled = true;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                btn.disabled = false;
+                location.reload();
+            }
+        }
+        xhttp.open("POST", "/POST/Send_Comment", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify(data));
+    }
+    function Delete(btn, type, cmtID) {
+        let data = { page: "<%- data.ArticleID %>", author: "<%- session.userID %>", type: type, cmtID: cmtID };
+        btn.disabled = true;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                btn.disabled = false;
+                if (type === "Comment") location.reload();
+                else window.location.href = `/Topic/<%- data.FacultyID %>`;
+            }
+        }
+        xhttp.open("POST", "/POST/Delete", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify(data));
+    }
+</script>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+</head>
+<body>
+    <div>
+        <form action="/POST/DoRegister" method="POST">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" placeholder="Username" required><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" placeholder="Password" minlength="6" required><br>
+            <label for="password">Reenter Password:</label><br>
+            <input type="password" id="repassword" name="repassword" placeholder="Reenter Password" minlength="6" required><br>
+            <label for="email">Email:</label><br>
+            <input type="text" id="email" name="email" placeholder="Email" required><br>
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" placeholder="Name" required><br>
+            <label for="role">Role:</label><br>
+            <select name="role" id="role" onchange="SelectRole(this)">
+                <option value="1">Guest</option>
+                <option value="2">Student</option>
+                <option value="3">Marketing Coordinator</option>
+                <option value="4">Marketing Manager</option>
+            </select><br>
+
+            <div style="display: none;" id="stdSector">
+                <label for="studentID">Student ID:</label><br>
+                <input type="text" id="studentID" name="studentID" placeholder="Student ID"><br>
+            </div>
+            <div style="display: none;" id="facultySector">
+                <label for="faculty">Faculty:</label><br>
+                <select name="faculty" id="faculty">
+                    <% for (let faculty of data.Faculty) { %>
+                        <option value="<%- faculty.FacultyID %>"><%- faculty.FacultyName %></option>
+                    <% } %>
+                </select><br>
+            </div>
+            <br>
+            <input type="submit" value="Register">
+        </form>
+    </div>
+</body>
+</html>
+
+<script>
+    window.onload = function () {
+        let txtPassword = document.getElementById("password");
+        let txtConfirmPassword = document.getElementById("repassword");
+        txtPassword.onchange = ConfirmPassword;
+        txtConfirmPassword.onkeyup = ConfirmPassword;
+        function ConfirmPassword() {
+            txtConfirmPassword.setCustomValidity("");
+            if (txtPassword.value != txtConfirmPassword.value) {
+                txtConfirmPassword.setCustomValidity("Please enter the same Password as above.");
+            }
+        }
+    }
+    function SelectRole(select) {
+        if (select.value === "2" || select.value === "3") {
+            document.getElementById("facultySector").style.display = "block";
+            document.getElementById("faculty").required = true;
+            if (select.value === "2") {
+                document.getElementById("stdSector").style.display = "block";
+                document.getElementById("studentID").required = true;
+            } else {
+                document.getElementById("stdSector").style.display = "none";
+                document.getElementById("studentID").required = false;
+            }
+        } else {
+            document.getElementById("stdSector").style.display = "none";
+            document.getElementById("facultySector").style.display = "none";
+            document.getElementById("studentID").required = false;
+            document.getElementById("faculty").required = false;
+        }
+    }
+</script>

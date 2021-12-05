@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+    <style>
+        table, th, td {
+            padding: 5px;
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+    </style>
+</head>
+    
+<body>
+    <% const timeFormat = (time) => { 
+        let dt = new Date(+time);
+        return `${dt.getDate()}/${(dt.getMonth()+1)}/${dt.getFullYear()}`;
+    } %>
+    <%- include('../partials/topnav') %>
+    <br>
+    <div>
+        <table style="width: 100%;">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Student ID</th>
+                <th>Created</th>
+                <th>Contact</th>
+            </tr>
+            <% for (let account of data.Students) { %>
+            <tr>
+                <td><%- account.AccID %></td>
+                <td><%- account.Username %></td>
+                <td><%- account.Name %></td>
+                <td><%- account.Email %></td>
+                <td><%- account.StudentID %></td>
+                <td><%- timeFormat(account.CreatedAt) %></td>
+                <td>
+                    <a href="/Message/<%- account.AccID %>">Send Message</a>
+                </td>
+            </tr>
+            <% } %>
+        </table>
+    </div>
+</body>
+</html>

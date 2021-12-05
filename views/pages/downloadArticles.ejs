@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+    <style>
+        table, th, td {
+            padding: 5px;
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+    </style>
+</head>
+    
+<body>
+    <% const timeFormat = (time) => { 
+        let dt = new Date(+time);
+        return `${dt.getDate()}/${(dt.getMonth()+1)}/${dt.getFullYear()}`;
+    } %>
+    <%- include('../partials/topnav') %>
+    <br>
+    <div>
+        <table style="width: 100%;">
+            <tr>
+                <th>ID</th>
+                <th>Topic</th>
+                <th>Faculty</th>
+                <th>Author</th>
+                <th>Action</th>
+            </tr>
+            <% for (let article of data.Articles) { %>
+            <tr>
+                <td><%- article.ArticleID %></td>
+                <td><%- article.TopicName %></td>
+                <td><%- article.FacultyName %></td>
+                <td><%- article.Username %></td>
+                <td>
+                    <a href="/Download/<%- article.ArticleID %>">Download as Zip</a>
+                </td>
+            </tr>
+            <% } %>
+        </table>
+    </div>
+</body>
+</html>

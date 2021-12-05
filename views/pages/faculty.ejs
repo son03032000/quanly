@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+</head>
+    
+<body>
+    <% const timeFormat = (time) => { 
+        let dt = new Date(+time);
+        return `${dt.getDate()}/${(dt.getMonth()+1)}/${dt.getFullYear()}`;
+    } %>
+    <%- include('../partials/topnav') %>
+    <div>
+        <ul>
+            <% for (let topic of data.topics) { 
+            %>
+                <li>
+                    <a href="/Topic/<%- topic.TopicID %>"><%- topic.TopicName %> (Starting from <%- timeFormat(topic.CreatedAt) %> to <%- timeFormat(topic.ClosedOn) %>)</a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+</body>
+
+</html>
+
+

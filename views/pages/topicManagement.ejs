@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+    <style>
+        table, th, td {
+            padding: 5px;
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+    </style>
+</head>
+    
+<body>
+    <% const timeFormat = (time) => { 
+        let dt = new Date(+time);
+        return `${dt.getDate()}/${(dt.getMonth()+1)}/${dt.getFullYear()}`;
+    } %>
+    <%- include('../partials/topnav') %>
+    <br>
+    <a href="/Admin/CreateTopic">Create a new topic</a>
+    <div>
+        <table style="width: 100%;">
+            <tr>
+                <th>ID</th>
+                <th>Topic Name</th>
+                <th>Faculty</th>
+                <th>Created</th>
+                <th>Deadline</th>
+                <th>Manage</th>
+            </tr>
+            <% for (let topic of data.Topic) { %>
+            <tr>
+                <td><%- topic.TopicID %></td>
+                <td><%- topic.TopicName %></td>
+                <td><%- topic.FacultyName %></td>
+                <td><%- timeFormat(topic.CreatedAt) %></td>
+                <td><%- timeFormat(topic.ClosedOn) %></td>
+                <td>
+                    <a href="/Admin/EditTopic?id=<%- topic.TopicID %>">Edit</a>
+                    <button onclick="Delete(this, '<%- topic.TopicID %>')">Delete</button>
+                </td>
+            </tr>
+            <% } %>
+        </table>
+    </div>
+</body>
+<script>
+    function Delete(btn, topicID) {
+        let data = { type: "Topic", topicID: topicID };
+        btn.disabled = true;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                btn.disabled = false;
+                location.reload();
+            }
+        }
+        xhttp.open("POST", "/POST/Delete", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify(data));
+    }
+</script>
+</html>

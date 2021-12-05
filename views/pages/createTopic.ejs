@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+</head>
+    
+<body>
+    <%- include('../partials/topnav') %>
+    <br>
+    <div>
+        <form action="/POST/CreateTopic" method="POST">
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="title" placeholder="Title" required><br>
+            <label for="faculty">Faculty:</label>
+            <select name="faculty" required>
+                <% for (let faculty of data.Faculty) { %>
+                    <option value="<%- faculty.FacultyID %>"><%- faculty.FacultyName %></option>
+                <% } %>
+            </select><br>
+            <label for="deadline">Deadline:</label>
+            <input type="date" id="deadline" name="deadline" required><br>
+            <input type="submit" value="Finish">
+        </form>
+    </div>
+</body>
+
+</html>
